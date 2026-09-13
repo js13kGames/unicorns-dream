@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Unicorn's Dream</title>
+    <style>
+      :root { --pink: #f472b6; }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: #fff; }
+
+
+      #bg { position: fixed; inset: 0; background: #111; z-index: 0; pointer-events: none; overflow: hidden; }
+      #bg::after {
+        content: ""; position: absolute; inset: 0; z-index: 2;
+        background: radial-gradient(circle at 50% 45%, transparent 25%, #000b);
+      }
+      .b {
+        position: absolute; border-radius: 50%; will-change: transform;
+        width: var(--s); height: var(--s); filter: blur(var(--b));
+        animation: var(--k) var(--t) ease-in-out infinite alternate;
+      }
+      .s { background: #11131a; }
+      .c { background: #ff007f; }
+      .r  { border: var(--w) solid var(--c); }
+
+
+      @keyframes f0 { 0%{transform:translate(-20vw,25vh)} 35%{transform:translate(22vw,55vh) scale(1.06)} 70%{transform:translate(62vw,15vh) scale(.94)} 100%{transform:translate(92vw,-16vh) scale(1.02)} }
+      @keyframes f1 { 0%{transform:translate(-14vw,-10vh)} 33%{transform:translate(26vw,18vh) scale(1.08)} 66%{transform:translate(68vw,-6vh) scale(.92)} 100%{transform:translate(16vw,36vh) scale(1.04)} }
+      @keyframes f2 { 0%{transform:translate(88vw,24vh) scale(.95)} 40%{transform:translate(44vw,52vh) scale(1.12)} 80%{transform:translate(-12vw,72vh)} 100%{transform:translate(22vw,86vh) scale(1.05)} }
+      @keyframes f3 { 0%{transform:translate(-10vw,66vh) scale(1.1)} 35%{transform:translate(36vw,40vh) scale(.95)} 70%{transform:translate(96vw,8vh) scale(1.15)} 100%{transform:translate(52vw,-12vh)} }
+      @keyframes f4 { 0%{transform:translate(104vw,62vh)} 25%{transform:translate(58vw,28vh) scale(1.2)} 50%{transform:translate(18vw,-10vh) scale(.85)} 75%{transform:translate(-10vw,38vh) scale(1.15)} 100%{transform:translate(48vw,94vh)} }
+      @keyframes f5 { 0%{transform:translate(26vw,108vh) scale(1.1)} 30%{transform:translate(46vw,58vh) scale(.9)} 60%{transform:translate(106vw,38vh) scale(1.22)} 100%{transform:translate(10vw,16vh)} }
+      @keyframes f6 { 0%{transform:translate(80vw,-15vh)} 35%{transform:translate(30vw,30vh) scale(1.08)} 70%{transform:translate(-10vw,60vh) scale(.95)} 100%{transform:translate(45vw,85vh) scale(1.03)} }
+      @keyframes f7 { 0%{transform:translate(15vw,80vh)} 30%{transform:translate(65vw,45vh) scale(1.15)} 65%{transform:translate(85vw,10vh) scale(.92)} 100%{transform:translate(20vw,-5vh) scale(1.05)} }
+      @keyframes f8 { 0%{transform:translate(90vw,85vh) scale(1.04)} 33%{transform:translate(50vw,40vh) scale(.96)} 66%{transform:translate(10vw,15vh) scale(1.08)} 100%{transform:translate(70vw,-10vh)} }
+      @keyframes f9 { 0%{transform:translate(-15vw,45vh) scale(.95)} 35%{transform:translate(35vw,75vh) scale(1.12)} 70%{transform:translate(75vw,35vh) scale(.98)} 100%{transform:translate(40vw,5vh) scale(1.06)} }
+      @keyframes f10 { 0%{transform:translate(50vw,-12vh)} 30%{transform:translate(10vw,35vh) scale(1.16)} 65%{transform:translate(60vw,70vh) scale(.9)} 100%{transform:translate(95vw,40vh) scale(1.05)} }
+
+
+      #game { position: absolute; inset:0; width: 100%; height: 100%; display: block; z-index: 10; }
+
+
+      #warp, #impact, #tips { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+      #warp, #impact { opacity: 0; mix-blend-mode: screen; }
+      #warp {
+        z-index: 12;
+        background: radial-gradient(ellipse at 50% 55%, transparent 35%, #38bdf81f 70%, #c084fc42 100%);
+        transition: opacity .06s ease-out;
+      }
+      #impact {
+        z-index: 14;
+       background: radial-gradient(circle at 50% 50%, #38bdf840 0%, #0ea5e91a 45%, #818cf847 80%, #c084fc6b 100%);
+        transition: opacity .08s ease-out;
+      }
+      #tips { z-index: 99; }
+      .tip { position: absolute; transform: translate(-50%,-50%); font-size: 26px; font-weight: 700; white-space: nowrap; }
+
+      #count { position: absolute; top: 40%; width: 100%; z-index: 100; text-align: center; font-size: 80px; font-weight: bold; pointer-events: none; }
+
+
+      #hud {
+        position: absolute; top: 24px; left: 24px; right: 24px; z-index: 100;
+        display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none;
+      }
+      .stat { display: flex; flex-flow: column; width: 200px; }
+      #hp-stat { align-items: center; text-align: center; }
+      #lv-stat { align-items: flex-end; text-align: right; }
+      .label { font-size: 16px; margin-bottom: 2px; }
+      .value { font-size: 24px; }
+      #power { color: var(--pink); }
+      #lives { font-size: 24px; }
+
+
+      #prog {
+        position: absolute; right: 24px; top: 50%; transform: translateY(-50%); z-index: 99;
+        display: flex; flex-flow: column; align-items: center; pointer-events: none;
+      }
+      .track {
+        width: 8px; height: 480px; max-height: 75vh; overflow: hidden;
+        background: #ffffff1f; border: 1px solid #ffffff40;
+        display: flex; flex-flow: column; justify-content: flex-end;
+      }
+      .fill { width: 100%; height: 0%; background: #fff; transition: height .1s linear; }
+
+
+      #intro, #end { position: absolute; inset: 0; display: flex; flex-flow: column; justify-content: center; align-items: center; }
+      #intro { background: #000000f7; z-index: 350; }
+      #end   { background: #000000f2; z-index: 101; opacity: 0; pointer-events: none; transition: opacity .2s;}
+      #end.active { opacity: 1; pointer-events: auto; }
+
+
+      .modal { width: 90%; padding: 32px;  border: 1px solid #f472b6; border-radius: 24px; text-align: center; }
+      .start-box { max-width: 580px; padding: 36px; }
+      .result   { position: relative; z-index: 102; padding: 40px; max-width: 580px}
+      .title     { font-size: 24px; margin-bottom: 6px; }
+      .art { position: relative; width: 100%; display: flex; justify-content: center; height: 140px; align-items: flex-end; margin-bottom: 16px; }
+      .arc   { width: 460px; height: 140px; }
+      #sector    { font-size: 12px; color: var(--pink); margin-bottom: 20px; min-height: 18px; }
+      .heading { font-size: 28px; margin-bottom: 8px; }
+      .end-sub   { color: var(--dim); font-size: 13px; margin-bottom: 24px; }
+      .score     { font-size: 20px; margin-bottom: 20px; }
+      #score { color: var(--pink); }
+
+
+      .btn {
+        background: var(--pink); border: 0; color: #fff; font-size: 12px;
+        padding: 12px 28px; border-radius: 24px; transition: background .15s;
+      }
+      .launch { padding: 12px 36px; }
+    </style>
+  </head>
+  <body>
+
+    <div id="bg">
+        <i class="b r"  style="--s:700px;--b:30px;--w:16px;--c:#00f5ff;--t:96s;--k:f0"></i>
+        <i class="b s" style="--s:560px;--b:44px;--t:84s;--k:f1"></i>
+        <i class="b c" style="--s:320px;--b:32px;--t:70s;--k:f2"></i>
+        <i class="b s" style="--s:180px;--b:30px;--t:58s;--k:f3"></i>
+        <i class="b r"  style="--s:80px;--b:23px;--w:9px;--c:#0f6;--t:48s;--k:f4"></i>
+        <i class="b c" style="--s:40px;--b:22px;--t:40s;--k:f5"></i>
+        <i class="b r"  style="--s:460px;--b:28px;--w:14px;--c:#a855f7;--t:88s;--k:f6"></i>
+        <i class="b c" style="--s:140px;--b:25px;--t:64s;--k:f7"></i>
+        <i class="b s" style="--s:380px;--b:35px;--t:76s;--k:f8"></i>
+        <i class="b c" style="--s:220px;--b:28px;--t:68s;--k:f9"></i>
+        <i class="b r"  style="--s:120px;--b:23px;--w:10px;--c:#ffd32a;--t:52s;--k:f10"></i>
+    </div>
+
+    <canvas id="game"></canvas>
+    <div id="warp"></div>
+    <div id="impact"></div>
+    <div id="tips"></div>
+    <div id="count" role="status" aria-live="polite"></div>
+
+
+    <div id="hud">
+      <div class="stat">
+        <div class="label">Dash [E]</div>
+        <div id="power" class="value">READY</div>
+      </div>
+      <div id="hp-stat" class="stat">
+        <div class="label">Lives</div>
+        <div id="lives" class="value">❤️❤️❤️</div>
+      </div>
+      <div id="lv-stat" class="stat">
+        <div class="label">Level</div>
+        <div id="level" class="value">1 / 7</div>
+      </div>
+    </div>
+
+
+    <div id="prog">
+      <div class="track"><div id="fill" class="fill"></div></div>
+    </div>
+
+
+    <div id="intro">
+      <div class="modal start-box">
+        <div class="title">UNICORN'S DREAM</div>
+        <div class="art"><canvas id="start-art" width="920" height="280" class="arc"></canvas></div>
+        <div id="sector">LEVEL 1</div>
+        <button id="start" class="btn launch">START</button>
+      </div>
+    </div>
+
+
+    <div id="end">
+      <div class="modal result">
+        <div id="heading" class="heading">GAME OVER</div>
+        <div id="win-art" hidden><div class="art"><canvas id="win-canvas" width="920" height="280" class="arc" aria-label="Completed rainbow sectors"></canvas></div></div>
+        <div class="score"><span id="score-key">Final Score: </span><span id="score">0</span></div>
+        <button id="next" class="btn" hidden>CONTINUE</button>
+        <button id="restart" class="btn">PLAY AGAIN</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
